@@ -2,8 +2,11 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta http-equiv="refresh" content="300">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Doji Gold Price - Bảng Giá Vàng</title>
     <style>
         * {
@@ -12,11 +15,16 @@
             box-sizing: border-box;
         }
 
+        html, body {
+            width: 100%;
+            overflow-x: hidden;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 16px;
         }
 
         .container {
@@ -27,48 +35,55 @@
         .header {
             text-align: center;
             color: white;
-            margin-bottom: 40px;
+            margin-bottom: 24px;
             animation: slideDown 0.6s ease-out;
         }
 
         .header h1 {
-            font-size: 3em;
-            margin-bottom: 10px;
+            font-size: clamp(1.5rem, 8vw, 3rem);
+            margin-bottom: 8px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            word-break: break-word;
         }
 
         .header p {
-            font-size: 1.1em;
+            font-size: clamp(0.9rem, 4vw, 1.1rem);
             opacity: 0.9;
+            margin-bottom: 8px;
         }
 
         .update-time {
             color: #fff;
-            font-size: 0.9em;
-            margin-top: 10px;
+            font-size: 0.85em;
             opacity: 0.8;
+            word-break: break-word;
         }
 
         .filter-section {
             display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
+            gap: 8px;
+            margin-bottom: 24px;
             flex-wrap: wrap;
             justify-content: center;
         }
 
         .filter-btn {
-            padding: 10px 20px;
+            padding: 12px 16px;
             border: 2px solid white;
             background: rgba(255,255,255,0.1);
             color: white;
             border-radius: 25px;
             cursor: pointer;
-            font-size: 0.95em;
+            font-size: clamp(0.8rem, 3vw, 0.95rem);
             transition: all 0.3s ease;
+            min-height: 44px;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            white-space: nowrap;
         }
 
         .filter-btn:hover,
+        .filter-btn:active,
         .filter-btn.active {
             background: white;
             color: #667eea;
@@ -82,28 +97,36 @@
             box-shadow: 0 10px 40px rgba(0,0,0,0.1);
             overflow: hidden;
             animation: slideUp 0.6s ease-out;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 500px;
         }
 
         thead {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
         th {
-            padding: 18px 15px;
+            padding: clamp(12px, 3vw, 18px) clamp(8px, 2vw, 15px);
             text-align: left;
             font-weight: 600;
-            font-size: 0.95em;
+            font-size: clamp(0.75rem, 2.5vw, 0.95rem);
+            white-space: nowrap;
         }
 
         td {
-            padding: 15px;
+            padding: clamp(12px, 3vw, 15px) clamp(8px, 2vw, 15px);
             border-bottom: 1px solid #e0e0e0;
+            font-size: clamp(0.8rem, 2.5vw, 0.95rem);
         }
 
         tbody tr {
@@ -112,7 +135,12 @@
 
         tbody tr:hover {
             background-color: #f5f5f5;
-            transform: scale(1.01);
+        }
+
+        @media (hover: hover) {
+            tbody tr:hover {
+                transform: scale(1.01);
+            }
         }
 
         tbody tr.inactive {
@@ -147,10 +175,11 @@
 
         .type-badge {
             display: inline-block;
-            padding: 5px 12px;
+            padding: 4px 10px;
             border-radius: 12px;
-            font-size: 0.85em;
+            font-size: clamp(0.7rem, 2vw, 0.85em);
             font-weight: 600;
+            white-space: nowrap;
         }
 
         .type-badge.gold {
@@ -169,6 +198,7 @@
             height: 12px;
             border-radius: 50%;
             margin-right: 5px;
+            vertical-align: middle;
         }
 
         .status-active {
@@ -208,55 +238,250 @@
 
         .no-data {
             text-align: center;
-            padding: 40px;
+            padding: 40px 20px;
             color: #999;
             font-size: 1.1em;
         }
 
         .stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
         }
 
         .stat-card {
             background: rgba(255,255,255,0.1);
             border: 2px solid white;
             border-radius: 12px;
-            padding: 20px;
+            padding: clamp(16px, 4vw, 20px);
             color: white;
             text-align: center;
             backdrop-filter: blur(10px);
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .stat-card h3 {
-            font-size: 2em;
+            font-size: clamp(1.5rem, 5vw, 2rem);
             margin-bottom: 5px;
         }
 
         .stat-card p {
             opacity: 0.8;
-            font-size: 0.9em;
+            font-size: clamp(0.75rem, 2.5vw, 0.9em);
         }
 
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2em;
+        /* Mobile-first responsive styles */
+        @media (max-width: 640px) {
+            body {
+                padding: 12px;
+            }
+
+            .container {
+                padding: 0;
+            }
+
+            .header {
+                margin-bottom: 16px;
+            }
+
+            .filter-section {
+                gap: 6px;
+                margin-bottom: 16px;
+            }
+
+            .filter-btn {
+                padding: 10px 14px;
+                font-size: 0.8rem;
+                min-height: 40px;
+                flex: 1 1 auto;
+                min-width: 0;
             }
 
             th, td {
                 padding: 10px 8px;
-                font-size: 0.85em;
+                font-size: 0.8rem;
             }
 
-            .filter-section {
-                gap: 5px;
+            th {
+                font-size: 0.75rem;
+            }
+
+            .type-badge {
+                padding: 3px 8px;
+                font-size: 0.7rem;
+            }
+
+            .stat-card {
+                padding: 12px;
+                min-height: 90px;
+            }
+
+            .stat-card h3 {
+                font-size: 1.5rem;
+            }
+
+            .stat-card p {
+                font-size: 0.75rem;
+            }
+
+            .price-range span {
+                display: block;
+                font-size: 0.8rem;
+            }
+
+            /* Stack prices on very small screens */
+            table {
+                min-width: 400px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 8px;
+            }
+
+            .header h1 {
+                font-size: 1.3rem;
+            }
+
+            .header p {
+                font-size: 0.85rem;
+            }
+
+            .update-time {
+                font-size: 0.8rem;
             }
 
             .filter-btn {
-                padding: 8px 15px;
-                font-size: 0.85em;
+                font-size: 0.75rem;
+                padding: 8px 12px;
+                min-height: 38px;
+            }
+
+            table {
+                min-width: 350px;
+                font-size: 0.75rem;
+            }
+
+            th, td {
+                padding: 8px 6px;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+
+            .stat-card {
+                padding: 10px;
+                min-height: 80px;
+            }
+
+            .stat-card h3 {
+                font-size: 1.3rem;
+            }
+
+            .stat-card p {
+                font-size: 0.7rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .header h1 {
+                font-size: 1.1rem;
+            }
+
+            .header p {
+                font-size: 0.8rem;
+            }
+
+            table {
+                min-width: 320px;
+            }
+
+            th, td {
+                padding: 6px 4px;
+                font-size: 0.7rem;
+            }
+        }
+
+        /* Landscape mode optimization */
+        @media (max-height: 500px) and (orientation: landscape) {
+            body {
+                padding: 8px;
+            }
+
+            .header {
+                margin-bottom: 12px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+                margin-bottom: 4px;
+            }
+
+            .header p {
+                font-size: 0.9rem;
+                margin-bottom: 4px;
+            }
+
+            .stats {
+                margin-bottom: 12px;
+                gap: 8px;
+            }
+
+            .stat-card {
+                padding: 8px;
+                min-height: auto;
+            }
+
+            .filter-section {
+                margin-bottom: 12px;
+                gap: 4px;
+            }
+        }
+
+        /* High DPI displays */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .table-wrapper {
+                border: 0.5px solid #e0e0e0;
+            }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            .table-wrapper {
+                background: #1e1e1e;
+                color: #e0e0e0;
+            }
+
+            th {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+
+            td {
+                color: #e0e0e0;
+                border-bottom-color: #333;
+            }
+
+            .material-name {
+                color: #e0e0e0;
+            }
+
+            tbody tr:hover {
+                background-color: #2a2a2a;
+            }
+
+            tbody tr.inactive {
+                background-color: #161616;
+            }
+
+            .no-data {
+                color: #666;
             }
         }
     </style>
@@ -273,9 +498,9 @@
 
         <div class="filter-section">
             <button class="filter-btn active" onclick="filterByType('all')">Tất cả</button>
-            <button class="filter-btn" onclick="filterByType('G')">Vàng (Gold)</button>
-            <button class="filter-btn" onclick="filterByType('S')">Bạc (Silver)</button>
-            <button class="filter-btn" onclick="filterByStatus('active')">Đang hoạt động</button>
+            <button class="filter-btn" onclick="filterByType('G')">Vàng</button>
+            <button class="filter-btn" onclick="filterByType('S')">Bạc</button>
+            <button class="filter-btn" onclick="filterByStatus('active')">Hoạt động</button>
         </div>
 
         <div class="table-wrapper">
@@ -285,8 +510,8 @@
                         <th>Mã</th>
                         <th>Tên sản phẩm</th>
                         <th>Loại</th>
-                        <th class="price-cell">Giá mua vào</th>
-                        <th class="price-cell">Giá bán ra</th>
+                        <th class="price-cell">Mua vào</th>
+                        <th class="price-cell">Bán ra</th>
                         <th class="price-cell">Chênh lệch</th>
                         <th>Trạng thái</th>
                     </tr>
@@ -326,7 +551,7 @@
                     minute: '2-digit',
                     second: '2-digit'
                 });
-                document.getElementById('updateTime').textContent = `Cập nhật lúc: ${formatted}`;
+                document.getElementById('updateTime').textContent = `Cập nhật: ${formatted}`;
             }
         }
 
@@ -342,15 +567,15 @@
                 </div>
                 <div class="stat-card">
                     <h3>${goldCount}</h3>
-                    <p>Sản phẩm vàng</p>
+                    <p>Vàng</p>
                 </div>
                 <div class="stat-card">
                     <h3>${silverCount}</h3>
-                    <p>Sản phẩm bạc</p>
+                    <p>Bạc</p>
                 </div>
                 <div class="stat-card">
                     <h3>${activeCount}</h3>
-                    <p>Đang hoạt động</p>
+                    <p>Hoạt động</p>
                 </div>
             `;
             document.getElementById('statsContainer').innerHTML = statsHtml;
@@ -358,21 +583,23 @@
 
         function filterByType(type) {
             currentFilter.type = type;
-            updateFilterButtons();
+            updateFilterButtons(event.target);
             renderTable();
         }
 
         function filterByStatus(status) {
             currentFilter.status = status;
-            updateFilterButtons();
+            updateFilterButtons(event.target);
             renderTable();
         }
 
-        function updateFilterButtons() {
+        function updateFilterButtons(clickedBtn) {
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            event.target.classList.add('active');
+            if (clickedBtn) {
+                clickedBtn.classList.add('active');
+            }
         }
 
         function getFilteredPrices() {
@@ -400,7 +627,7 @@
                 const typeBadge = price.type === 'G' ? 'gold' : 'silver';
                 const typeLabel = price.type === 'G' ? 'Vàng' : 'Bạc';
                 const statusDot = price.isActive === true ? 'status-active' : 'status-inactive';
-                const statusText = price.isActive === true ? 'Hoạt động' : 'Ngừng hoạt động';
+                const statusText = price.isActive === true ? 'Hoạt động' : 'Ngừng';
 
                 return `
                     <tr class="${statusClass}">
@@ -409,10 +636,9 @@
                         <td><span class="type-badge ${typeBadge}">${typeLabel}</span></td>
                         <td class="price-cell price-buy">${price.priceDojiBuyIn.toLocaleString('vi-VN')}</td>
                         <td class="price-cell price-sell">${price.priceDojiSellOut.toLocaleString('vi-VN')}</td>
-                        <td class="price-cell price-range">${diff.toLocaleString('vi-VN')} <span style="color: #999;">(${diffPercent}%)</span></td>
+                        <td class="price-cell price-range">${diff.toLocaleString('vi-VN')}<span style="color: #999;">(${diffPercent}%)</span></td>
                         <td>
-                            <span class="status-badge ${statusDot}"></span>
-                            ${statusText}
+                            <span class="status-badge ${statusDot}"></span><span>${statusText}</span>
                         </td>
                     </tr>
                 `;
@@ -421,6 +647,9 @@
 
         // Load prices on page load
         window.addEventListener('DOMContentLoaded', loadPrices);
+
+        // Refresh data periodically
+        setInterval(loadPrices, 300000); // Refresh every 5 minutes
     </script>
 </body>
 </html>
