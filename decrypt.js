@@ -6,7 +6,7 @@ const key = Buffer.from(
   'hex'
 );
 
-const data = require('fs').readFileSync('gold_prices.json', 'utf8');
+const data = require('fs').readFileSync('gold_prices_encrypted.json', 'utf8');
 const encryptedData = JSON.parse(data).data;
 const raw = Buffer.from(encryptedData, 'base64');
 
