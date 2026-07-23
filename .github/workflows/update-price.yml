@@ -2,10 +2,8 @@ name: Update Gold Prices
 
 on:
   schedule:
-    # Run every hour
-    - cron: '0 * * * *'
-  # Allow manual trigger
-  workflow_dispatch:
+    # Runs every 5 minutes
+    - cron: '*/5 * * * *'
 
 permissions:
   contents: write
