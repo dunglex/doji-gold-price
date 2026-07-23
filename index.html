@@ -528,7 +528,7 @@
 
         async function loadPrices() {
             try {
-                const response = await fetch('gold_prices_decrypted.json');
+                const response = await fetch('gold_prices.json');
                 allPrices = await response.json();
                 renderTable();
                 updateStats();
