@@ -61,36 +61,24 @@
             word-break: break-word;
         }
 
-        .filter-section {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 24px;
-            flex-wrap: wrap;
-            justify-content: center;
+        .source-section {
+            margin-bottom: 20px;
         }
 
-        .filter-btn {
-            padding: 12px 16px;
-            border: 2px solid white;
-            background: rgba(255,255,255,0.1);
+        .source-title {
             color: white;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: clamp(0.8rem, 3vw, 0.95rem);
-            transition: all 0.3s ease;
-            min-height: 44px;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-            white-space: nowrap;
+            margin: 10px 0;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .filter-btn:hover,
-        .filter-btn:active,
-        .filter-btn.active {
-            background: white;
-            color: #667eea;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        .source-title span.badge {
+            background: rgba(255,255,255,0.12);
+            padding: 6px 10px;
+            border-radius: 10px;
+            font-weight: 600;
         }
 
         .table-wrapper {
@@ -491,163 +479,145 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-GGYDT2S6GH"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
+      function gtag(){dataLayer.push(arguments);} 
       gtag('js', new Date());
-    
       gtag('config', 'G-GGYDT2S6GH');
     </script>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>💰 BẢNG GIÁ VÀNG DOJI</h1>
-            <p>Doji Gold Price - Cập nhật thị trường vàng real-time</p>
-            <div class="update-time" id="updateTime"></div>
+            <h1>💰 BẢNG GIÁ VÀNG</h1>
+            <p>Hiển thị từ: goldprice → SJC → DOJI</p>
+            <div class="update-time" id="updateTime">&nbsp;</div>
         </div>
 
         <div class="stats" id="statsContainer"></div>
 
-        <div class="filter-section">
-            <button class="filter-btn active" onclick="filterByType('all')">Tất cả</button>
-            <button class="filter-btn" onclick="filterByType('G')">Vàng</button>
-            <button class="filter-btn" onclick="filterByType('S')">Bạc</button>
-            <button class="filter-btn" onclick="filterByStatus('active')">Hoạt động</button>
+        <!-- GOLDPRICE SECTION -->
+        <div class="source-section" id="goldpriceSection">
+            <div class="source-title"><span class="badge">1</span> <strong>GoldPrice (gold_prices_goldprice.json)</strong></div>
+            <div class="table-wrapper">
+                <table id="goldpriceTable">
+                    <thead>
+                        <tr>
+                            <th>Mã</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Loại</th>
+                            <th class="price-cell">Mua vào</th>
+                            <th class="price-cell">Bán ra</th>
+                            <th class="price-cell">Chênh lệch</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody id="goldpriceBody">
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <div class="table-wrapper">
-            <table id="priceTable">
-                <thead>
-                    <tr>
-                        <th>Mã</th>
-                        <th>Tên sản phẩm</th>
-                        <th>Loại</th>
-                        <th class="price-cell">Mua vào</th>
-                        <th class="price-cell">Bán ra</th>
-                        <th class="price-cell">Chênh lệch</th>
-                        <th>Trạng thái</th>
-                    </tr>
-                </thead>
-                <tbody id="priceTableBody">
-                </tbody>
-            </table>
+        <!-- SJC SECTION -->
+        <div class="source-section" id="sjcSection">
+            <div class="source-title"><span class="badge">2</span> <strong>SJC (gold_prices_sjc.json)</strong></div>
+            <div class="table-wrapper">
+                <table id="sjcTable">
+                    <thead>
+                        <tr>
+                            <th>Mã</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Loại</th>
+                            <th class="price-cell">Mua vào</th>
+                            <th class="price-cell">Bán ra</th>
+                            <th class="price-cell">Chênh lệch</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sjcBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- DOJI SECTION -->
+        <div class="source-section" id="dojiSection">
+            <div class="source-title"><span class="badge">3</span> <strong>DOJI (gold_prices_doji.json)</strong></div>
+            <div class="table-wrapper">
+                <table id="dojiTable">
+                    <thead>
+                        <tr>
+                            <th>Mã</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Loại</th>
+                            <th class="price-cell">Mua vào</th>
+                            <th class="price-cell">Bán ra</th>
+                            <th class="price-cell">Chênh lệch</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dojiBody">
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <script>
-        let allPrices = [];
-        let currentFilter = { type: 'all', status: 'all' };
-
-        async function loadPrices() {
+        // Load three sources and render them vertically in the order: goldprice, sjc, doji
+        async function fetchJsonSafe(url) {
             try {
-                const response = await fetch('gold_prices_doji.json');
-                allPrices = await response.json();
-                renderTable();
-                updateStats();
-                updateTime();
-            } catch (error) {
-                console.error('Error loading prices:', error);
-                document.getElementById('priceTableBody').innerHTML = 
-                    '<tr><td colspan="7" class="no-data">Không thể tải dữ liệu giá vàng</td></tr>';
+                const resp = await fetch(url, {cache: 'no-store'});
+                const text = await resp.text();
+                // Try to parse JSON; if content is HTML or unparsable, return an object describing the error
+                try {
+                    const parsed = JSON.parse(text);
+                    return { ok: true, data: parsed };
+                } catch (e) {
+                    return { ok: false, error: 'Invalid JSON', raw: text };
+                }
+            } catch (err) {
+                return { ok: false, error: err.message };
             }
         }
 
-        function updateTime() {
-            if (allPrices.length > 0) {
-                const updateDate = new Date(allPrices[0].updateDate);
-                const formatted = updateDate.toLocaleString('vi-VN', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
-                });
-                document.getElementById('updateTime').textContent = `Cập nhật: ${formatted}`;
-            }
+        function formatNumber(v) {
+            if (v === null || v === undefined || isNaN(v)) return '-';
+            try { return Number(v).toLocaleString('vi-VN'); } catch (e) { return String(v); }
         }
 
-        function updateStats() {
-            const activeCount = allPrices.filter(p => p.isActive === true).length;
-            const goldCount = allPrices.filter(p => p.type === 'G').length;
-            const silverCount = allPrices.filter(p => p.type === 'S').length;
-
-            const statsHtml = `
-                <div class="stat-card">
-                    <h3>${allPrices.length}</h3>
-                    <p>Tổng sản phẩm</p>
-                </div>
-                <div class="stat-card">
-                    <h3>${goldCount}</h3>
-                    <p>Vàng</p>
-                </div>
-                <div class="stat-card">
-                    <h3>${silverCount}</h3>
-                    <p>Bạc</p>
-                </div>
-                <div class="stat-card">
-                    <h3>${activeCount}</h3>
-                    <p>Hoạt động</p>
-                </div>
-            `;
-            document.getElementById('statsContainer').innerHTML = statsHtml;
-        }
-
-        function filterByType(type) {
-            currentFilter.type = type;
-            updateFilterButtons(event.target);
-            renderTable();
-        }
-
-        function filterByStatus(status) {
-            currentFilter.status = status;
-            updateFilterButtons(event.target);
-            renderTable();
-        }
-
-        function updateFilterButtons(clickedBtn) {
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            if (clickedBtn) {
-                clickedBtn.classList.add('active');
-            }
-        }
-
-        function getFilteredPrices() {
-            return allPrices.filter(price => {
-                const typeMatch = currentFilter.type === 'all' || price.type === currentFilter.type;
-                const statusMatch = currentFilter.status === 'all' || 
-                    (currentFilter.status === 'active' ? price.isActive === true : true);
-                return typeMatch && statusMatch;
-            });
-        }
-
-        function renderTable() {
-            const filtered = getFilteredPrices();
-            const tbody = document.getElementById('priceTableBody');
-
-            if (filtered.length === 0) {
+        function renderPricesInto(bodyElId, prices) {
+            const tbody = document.getElementById(bodyElId);
+            if (!Array.isArray(prices) || prices.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="7" class="no-data">Không có dữ liệu</td></tr>';
                 return;
             }
 
-            tbody.innerHTML = filtered.map(price => {
-                const diff = price.priceDojiSellOut - price.priceDojiBuyIn;
-                const diffPercent = ((diff / price.priceDojiBuyIn) * 100).toFixed(2);
-                const statusClass = price.isActive === true ? '' : 'inactive';
-                const typeBadge = price.type === 'G' ? 'gold' : 'silver';
-                const typeLabel = price.type === 'G' ? 'Vàng' : 'Bạc';
+            tbody.innerHTML = prices.map(price => {
+                // Some sources may use different field names; fallback checks
+                const code = price.materialCode || price.curr || price.code || '';
+                const name = price.materialName || price.name || price.title || (price.curr ? price.curr + ' spot' : '—');
+                const type = price.type || (price.curr && price.curr.toUpperCase() === 'USD' ? 'G' : price.type) || 'G';
+                const buy = price.priceDojiBuyIn ?? price.buy ?? price.xauPrice ?? price.priceBuy ?? null;
+                const sell = price.priceDojiSellOut ?? price.sell ?? price.xagPrice ?? price.priceSell ?? null;
+
+                let diff = null;
+                if (buy != null && sell != null && !isNaN(buy) && !isNaN(sell)) {
+                    diff = sell - buy;
+                }
+
+                const statusClass = (price.isActive === true || price.isActive === undefined) ? '' : 'inactive';
+                const typeBadge = (price.type === 'S' || type === 'S') ? 'silver' : 'gold';
+                const typeLabel = (price.type === 'S' || type === 'S') ? 'Bạc' : 'Vàng';
                 const statusDot = price.isActive === true ? 'status-active' : 'status-inactive';
-                const statusText = price.isActive === true ? 'Hoạt động' : 'Ngừng';
+                const statusText = price.isActive === true ? 'Hoạt động' : (price.isActive === false ? 'Ngừng' : '-');
 
                 return `
                     <tr class="${statusClass}">
-                        <td class="material-code">${price.materialCode}</td>
-                        <td class="material-name">${price.materialName}</td>
+                        <td class="material-code">${code}</td>
+                        <td class="material-name">${escapeHtml(name)}</td>
                         <td><span class="type-badge ${typeBadge}">${typeLabel}</span></td>
-                        <td class="price-cell price-buy">${price.priceDojiBuyIn.toLocaleString('vi-VN')}</td>
-                        <td class="price-cell price-sell">${price.priceDojiSellOut.toLocaleString('vi-VN')}</td>
-                        <td class="price-cell price-range">${diff.toLocaleString('vi-VN')}<span style="color: #999;">(${diffPercent}%)</span></td>
+                        <td class="price-cell price-buy">${formatNumber(buy)}</td>
+                        <td class="price-cell price-sell">${formatNumber(sell)}</td>
+                        <td class="price-cell price-range">${diff !== null ? formatNumber(diff) : '-'}<span style="color: #999;">(${diff !== null && buy ? ((diff / buy) * 100).toFixed(2) + '%' : '-'})</span></td>
                         <td>
                             <span class="status-badge ${statusDot}"></span><span>${statusText}</span>
                         </td>
@@ -656,11 +626,125 @@
             }).join('');
         }
 
-        // Load prices on page load
-        window.addEventListener('DOMContentLoaded', loadPrices);
+        function escapeHtml(s) {
+            if (s === null || s === undefined) return '';
+            return String(s)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function renderErrorInto(bodyElId, message, raw) {
+            const tbody = document.getElementById(bodyElId);
+            const short = escapeHtml(String(message).slice(0, 200));
+            tbody.innerHTML = `<tr><td colspan="7" class="no-data">Lỗi tải dữ liệu: ${short}</td></tr>`;
+            // Keep raw for debugging in console
+            if (raw) console.warn('Raw response for', bodyElId, raw);
+        }
+
+        async function loadAll() {
+            // Fetch all three in parallel
+            const [gRes, sRes, dRes] = await Promise.all([
+                fetchJsonSafe('gold_prices_goldprice.json'),
+                fetchJsonSafe('gold_prices_sjc.json'),
+                fetchJsonSafe('gold_prices_doji.json')
+            ]);
+
+            // GOLDPRICE
+            if (gRes.ok) {
+                // goldprice file may have structure { items: [...] } or an array
+                const gData = gRes.data && gRes.data.items ? gRes.data.items : gRes.data;
+                renderPricesInto('goldpriceBody', Array.isArray(gData) ? gData : []);
+                // If available, set update time from first entry
+                if (Array.isArray(gData) && gData.length > 0 && gData[0].updateDate) {
+                    setUpdateTime(new Date(gData[0].updateDate));
+                } else if (gRes.data && gRes.data.ts) {
+                    try { setUpdateTime(new Date(Number(gRes.data.ts))); } catch(e){}
+                }
+            } else {
+                renderErrorInto('goldpriceBody', gRes.error || 'Invalid JSON', gRes.raw);
+            }
+
+            // SJC
+            if (sRes.ok) {
+                // sjc file may be an array similar to DOJI
+                const sData = sRes.data && sRes.data.items ? sRes.data.items : sRes.data;
+                if (Array.isArray(sData)) {
+                    renderPricesInto('sjcBody', sData);
+                    if (sData.length > 0 && sData[0].updateDate) setUpdateTime(new Date(sData[0].updateDate));
+                } else {
+                    // Sometime SJC fetch returns HTML or other shape; try to detect common fields
+                    renderPricesInto('sjcBody', Array.isArray(sData) ? sData : []);
+                }
+            } else {
+                // If content was HTML (Cloudflare block), we keep the message
+                renderErrorInto('sjcBody', sRes.error || 'Invalid JSON', sRes.raw);
+            }
+
+            // DOJI
+            if (dRes.ok) {
+                const dData = dRes.data;
+                renderPricesInto('dojiBody', Array.isArray(dData) ? dData : (dData && dData.items ? dData.items : []));
+                if (Array.isArray(dData) && dData.length > 0 && dData[0].updateDate) setUpdateTime(new Date(dData[0].updateDate));
+            } else {
+                renderErrorInto('dojiBody', dRes.error || 'Invalid JSON', dRes.raw);
+            }
+
+            updateStatsCombined();
+        }
+
+        function setUpdateTime(date) {
+            try {
+                if (!(date instanceof Date) || isNaN(date)) return;
+                const formatted = date.toLocaleString('vi-VN', {
+                    year: 'numeric', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit', second: '2-digit'
+                });
+                document.getElementById('updateTime').textContent = `Cập nhật: ${formatted}`;
+            } catch (e) {}
+        }
+
+        function updateStatsCombined() {
+            // Count total entries across three tables
+            const goldpriceCount = document.getElementById('goldpriceBody').querySelectorAll('tr').length;
+            const sjcCount = document.getElementById('sjcBody').querySelectorAll('tr').length;
+            const dojiCount = document.getElementById('dojiBody').querySelectorAll('tr').length;
+
+            const total = [goldpriceCount, sjcCount, dojiCount].reduce((a,b)=>a+b,0);
+
+            const statsHtml = `
+                <div class="stat-card">
+                    <h3>${total}</h3>
+                    <p>Tổng hàng (tất cả nguồn)</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${goldpriceCount}</h3>
+                    <p>GoldPrice</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${sjcCount}</h3>
+                    <p>SJC</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${dojiCount}</h3>
+                    <p>DOJI</p>
+                </div>
+            `;
+            document.getElementById('statsContainer').innerHTML = statsHtml;
+        }
 
         // Refresh data periodically
-        setInterval(loadPrices, 300000); // Refresh every 5 minutes
+        async function refreshLoop() {
+            await loadAll();
+        }
+
+        // Initial load and interval
+        window.addEventListener('DOMContentLoaded', () => {
+            refreshLoop();
+            setInterval(refreshLoop, 300000); // every 5 minutes
+        });
     </script>
 </body>
 </html>
