@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta http-equiv="refresh" content="300">
     <meta name="theme-color" content="#667eea">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Gold Price Tracker- Xem Giá Vàng</title>
+    <title>Xem Giá Vàng - Gold Price Tracker</title>
+    <meta name="description" content="Theo dõi giá vàng và bạc liên tục từ nhiều nguồn uy tín một cách nhanh chóng và chính xác.">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="icon" type="image/png" href="/favicon.png">
     <style>
@@ -474,6 +474,32 @@
                 color: #999;
             }
         }
+        .skip-link {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .skip-link:focus {
+            position: static;
+            width: auto;
+            height: auto;
+            padding: 8px 16px;
+            margin: 0;
+            overflow: visible;
+            clip: auto;
+            white-space: normal;
+            z-index: 1000;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+        }
     </style>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-GGYDT2S6GH"></script>
@@ -485,12 +511,13 @@
     </script>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <main class="container" id="main-content">
+        <header class="header">
             <h1>💰 XEM GIÁ VÀNG</h1>
             <p>Cập nhật giá vàng liên tục từ nhiều nguồn uy tín</p>
             <div class="update-time" id="updateTime">&nbsp;</div>
-        </div>
+        </header>
 
         <div class="stats" id="statsContainer"></div>
 
@@ -538,7 +565,7 @@
                 </table>
             </div>
         </div>
-    </div>
+    </main>
 
     <script>
         // Load three sources and render them vertically in the order: goldprice, sjc, doji
