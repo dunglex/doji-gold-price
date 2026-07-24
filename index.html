@@ -504,9 +504,10 @@
                             <th>Mã</th>
                             <th>Tên sản phẩm</th>
                             <th>Loại</th>
-                            <th class="price-cell">Mua vào</th>
-                            <th class="price-cell">Bán ra</th>
-                            <th class="price-cell">Chênh lệch</th>
+                            <th class="price-cell">Giá hiện tại</th>
+                            <th class="price-cell">Thay đổi 6 tháng</th>
+                            <th class="price-cell">Thay đổi hôm nay</th>
+                            <th class="price-cell">Giá đóng cửa</th>
                             <th>Trạng thái</th>
                         </tr>
                     </thead>
@@ -584,6 +585,40 @@
             try { return Number(v).toLocaleString('vi-VN'); } catch (e) { return String(v); }
         }
 
+        function renderGoldPrice(bodyElId, items) {
+            const tbody = document.getElementById(bodyElId);
+            if (!Array.isArray(items) || items.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="no-data">Không có dữ liệu</td></tr>';
+                return;
+            }
+
+            const data = items[0];
+            const rows = [
+                { label: 'Vàng', code: 'XAU', type: 'gold', price: data.xauPrice, chg: data.chgXau, pc: data.pcXau, close: data.xauClose },
+                { label: 'Bạc', code: 'XAG', type: 'silver', price: data.xagPrice, chg: data.chgXag, pc: data.pcXag, close: data.xagClose }
+            ];
+
+            tbody.innerHTML = rows.map(row => {
+                const chgColor = row.chg != null ? (row.chg >= 0 ? '#4caf50' : '#f44336') : '#666';
+                const pcColor = row.pc != null ? (row.pc >= 0 ? '#4caf50' : '#f44336') : '#666';
+                const chgText = row.chg != null ? (row.chg > 0 ? '+' + formatNumber(row.chg) : formatNumber(row.chg)) : '-';
+                const pcText = row.pc != null ? (row.pc > 0 ? '+' + row.pc.toFixed(3) + '%' : row.pc.toFixed(3) + '%') : '-';
+
+                return `
+                    <tr>
+                        <td class="material-code">${escapeHtml(data.curr)}</td>
+                        <td class="material-name">${escapeHtml(row.label)}</td>
+                        <td><span class="type-badge ${row.type}">${row.label === 'Vàng' ? 'Vàng' : 'Bạc'}</span></td>
+                        <td class="price-cell">${formatNumber(row.price)}</td>
+                        <td class="price-cell" style="color: ${chgColor}">${chgText}</td>
+                        <td class="price-cell" style="color: ${pcColor}">${pcText}</td>
+                        <td class="price-cell">${formatNumber(row.close)}</td>
+                        <td><span class="status-badge status-active"></span><span>Hoạt động</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
         function renderPricesInto(bodyElId, prices) {
             const tbody = document.getElementById(bodyElId);
             if (!Array.isArray(prices) || prices.length === 0) {
@@ -636,10 +671,11 @@
                 .replace(/'/g, '&#039;');
         }
 
-        function renderErrorInto(bodyElId, message, raw) {
+        function renderErrorInto(bodyElId, message, raw, colspan) {
             const tbody = document.getElementById(bodyElId);
             const short = escapeHtml(String(message).slice(0, 200));
-            tbody.innerHTML = `<tr><td colspan="7" class="no-data">Lỗi tải dữ liệu: ${short}</td></tr>`;
+            const col = colspan || 7;
+            tbody.innerHTML = `<tr><td colspan="${col}" class="no-data">Lỗi tải dữ liệu: ${short}</td></tr>`;
             // Keep raw for debugging in console
             if (raw) console.warn('Raw response for', bodyElId, raw);
         }
@@ -654,17 +690,13 @@
 
             // GOLDPRICE
             if (gRes.ok) {
-                // goldprice file may have structure { items: [...] } or an array
                 const gData = gRes.data && gRes.data.items ? gRes.data.items : gRes.data;
-                renderPricesInto('goldpriceBody', Array.isArray(gData) ? gData : []);
-                // If available, set update time from first entry
-                if (Array.isArray(gData) && gData.length > 0 && gData[0].updateDate) {
-                    setUpdateTime(new Date(gData[0].updateDate));
-                } else if (gRes.data && gRes.data.ts) {
+                renderGoldPrice('goldpriceBody', Array.isArray(gData) ? gData : []);
+                if (gRes.data && gRes.data.ts) {
                     try { setUpdateTime(new Date(Number(gRes.data.ts))); } catch(e){}
                 }
             } else {
-                renderErrorInto('goldpriceBody', gRes.error || 'Invalid JSON', gRes.raw);
+                renderErrorInto('goldpriceBody', gRes.error || 'Invalid JSON', gRes.raw, 8);
             }
 
             // SJC
