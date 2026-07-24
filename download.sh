@@ -1,3 +1,8 @@
+#!/usr/bin/env bash
+
+chmod +x ./curl
+chmod +x ./curl-impersonate
+
 # Download gold prices from Doji
 ./curl 'https://banggia.doji.vn/api/TablePrice/GetTablePrice' \
   -H 'Accept: application/json, text/plain, */*' \
