@@ -75,7 +75,8 @@
         }
 
         .source-title span.badge {
-            background: rgba(255,255,255,0.12);
+            background: rgba(0,0,0,0.15);
+            color: white;
             padding: 6px 10px;
             border-radius: 10px;
             font-weight: 600;
@@ -156,11 +157,15 @@
         }
 
         .price-buy {
-            color: #4caf50;
+            color: #2e7d32;
         }
 
         .price-sell {
-            color: #ff6b6b;
+            color: #c62828;
+        }
+
+        .price-range-percent {
+            color: #777;
         }
 
         .type-badge {
@@ -229,7 +234,7 @@
         .no-data {
             text-align: center;
             padding: 40px 20px;
-            color: #999;
+            color: #666;
             font-size: 1.1em;
         }
 
@@ -241,7 +246,7 @@
         }
 
         .stat-card {
-            background: rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.1);
             border: 2px solid white;
             border-radius: 12px;
             padding: clamp(16px, 4vw, 20px);
@@ -254,7 +259,7 @@
             justify-content: center;
         }
 
-        .stat-card h3 {
+        .stat-card .stat-value {
             font-size: clamp(1.5rem, 5vw, 2rem);
             margin-bottom: 5px;
         }
@@ -310,7 +315,7 @@
                 min-height: 90px;
             }
 
-            .stat-card h3 {
+            .stat-card .stat-value {
                 font-size: 1.5rem;
             }
 
@@ -371,7 +376,7 @@
                 min-height: 80px;
             }
 
-            .stat-card h3 {
+            .stat-card .stat-value {
                 font-size: 1.3rem;
             }
 
@@ -462,6 +467,18 @@
                 color: #e0e0e0;
             }
 
+            .price-buy {
+                color: #66bb6a;
+            }
+
+            .price-sell {
+                color: #f44336;
+            }
+
+            .price-range-percent {
+                color: #aaa;
+            }
+
             tbody tr:hover {
                 background-color: #3a3a3a;
             }
@@ -471,7 +488,7 @@
             }
 
             .no-data {
-                color: #999;
+                color: #aaa;
             }
         }
         .skip-link {
@@ -657,7 +674,7 @@
                         <td><span class="type-badge ${typeBadge}">${typeLabel}</span></td>
                         <td class="price-cell price-buy">${formatNumber(buy)}</td>
                         <td class="price-cell price-sell">${formatNumber(sell)}</td>
-                        <td class="price-cell price-range">${diff !== null ? formatNumber(diff) : '-'}<span style="color: #999;">(${diff !== null && buy ? ((diff / buy) * 100).toFixed(2) + '%' : '-'})</span></td>
+                        <td class="price-cell price-range">${diff !== null ? formatNumber(diff) : '-'}<span class="price-range-percent">(${diff !== null && buy ? ((diff / buy) * 100).toFixed(2) + '%' : '-'})</span></td>
                         <td>
                             <span class="status-badge ${statusDot}"></span><span>${statusText}</span>
                         </td>
@@ -735,15 +752,15 @@
 
             const statsHtml = `
                 <div class="stat-card">
-                    <h3>${total}</h3>
+                    <div class="stat-value">${total}</div>
                     <p>Tổng hàng (tất cả nguồn)</p>
                 </div>
                 <div class="stat-card">
-                    <h3>${goldpriceCount}</h3>
+                    <div class="stat-value">${goldpriceCount}</div>
                     <p>GoldPrice</p>
                 </div>
                 <div class="stat-card">
-                    <h3>${dojiCount}</h3>
+                    <div class="stat-value">${dojiCount}</div>
                     <p>DOJI</p>
                 </div>
             `;
