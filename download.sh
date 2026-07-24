@@ -1,5 +1,5 @@
 # Download gold prices from Doji
-curl 'https://banggia.doji.vn/api/TablePrice/GetTablePrice' \
+./curl 'https://banggia.doji.vn/api/TablePrice/GetTablePrice' \
   -H 'Accept: application/json, text/plain, */*' \
   -H 'Accept-Language: en-US,en;q=0.9,cs;q=0.8' \
   -H 'Authorization: Bearer null' \
@@ -14,7 +14,7 @@ curl 'https://banggia.doji.vn/api/TablePrice/GetTablePrice' \
   -H 'sec-ch-ua-platform: "Windows"' > gold_prices_doji_encrypted.json
 
 # Download gold prices from SJC
-curl 'https://sjc.com.vn/GoldPrice/Services/PriceService.ashx' \
+./curl 'https://sjc.com.vn/GoldPrice/Services/PriceService.ashx' \
   -X 'POST' \
   -H 'accept: */*' \
   -H 'accept-language: en-US,en;q=0.9' \
@@ -29,7 +29,7 @@ curl 'https://sjc.com.vn/GoldPrice/Services/PriceService.ashx' \
   -H 'x-requested-with: XMLHttpRequest' > gold_prices_sjc.json
 
 # Download gold prices from GoldPrice.org
-curl 'https://data-asg.goldprice.org/dbXRates/USD' \
+./curl 'https://data-asg.goldprice.org/dbXRates/USD' \
   -H 'accept: */*' \
   -H 'accept-language: en-US,en;q=0.9' \
   -H 'cache-control: no-cache' \
