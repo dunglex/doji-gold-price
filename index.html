@@ -496,7 +496,7 @@
 
         <!-- GOLDPRICE SECTION -->
         <div class="source-section" id="goldpriceSection">
-            <div class="source-title"><span class="badge">1</span> <strong>GoldPrice.org</strong></div>
+            <div class="source-title"><span class="badge">1</span> <strong>XAU & XAG</strong></div>
             <div class="table-wrapper">
                 <table id="goldpriceTable">
                     <thead>
@@ -660,7 +660,7 @@
 
         async function loadAll() {
             // Fetch all three in parallel
-            const [gRes, sRes, dRes] = await Promise.all([
+            const [gRes, dRes] = await Promise.all([
                 fetchJsonSafe('gold_prices_goldprice.json'),
                 fetchJsonSafe('gold_prices_doji.json')
             ]);
