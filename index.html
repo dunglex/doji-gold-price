@@ -716,43 +716,44 @@
         }
 
         async function loadAll() {
-            // Fetch all three in parallel
-            const [gRes, sRes, dRes] = await Promise.all([
-                fetchJsonSafe('gold_prices_goldprice.json'),
-                fetchJsonSafe('gold_prices_sjc.json'),
-                fetchJsonSafe('gold_prices_doji.json')
-            ]);
+            const res = await fetchJsonSafe('/api/prices');
+            if (!res.ok) {
+                const msg = res.error || 'Lỗi tải dữ liệu';
+                renderErrorInto('goldpriceBody', msg, res.raw, 8);
+                renderErrorInto('sjcBody', msg, res.raw, 7);
+                renderErrorInto('dojiBody', msg, res.raw, 7);
+                updateStatsCombined();
+                return;
+            }
+
+            const { goldprice, sjc, doji } = res.data;
 
             // GOLDPRICE
-            if (gRes.ok) {
-                const gData = gRes.data && gRes.data.items ? gRes.data.items : gRes.data;
-                renderGoldPrice('goldpriceBody', Array.isArray(gData) ? gData : []);
-                if (gRes.data && gRes.data.ts) {
-                    try { setUpdateTime(new Date(Number(gRes.data.ts))); } catch(e){}
+            const gData = goldprice && goldprice.items ? goldprice.items : goldprice;
+            if (Array.isArray(gData)) {
+                renderGoldPrice('goldpriceBody', gData);
+                if (goldprice && goldprice.ts) {
+                    try { setUpdateTime(new Date(Number(goldprice.ts))); } catch(e){}
                 }
             } else {
-                renderErrorInto('goldpriceBody', gRes.error || 'Invalid JSON', gRes.raw, 8);
+                renderErrorInto('goldpriceBody', 'Dữ liệu không hợp lệ', null, 8);
             }
 
             // SJC
-            if (sRes.ok) {
-                const sData = sRes.data && sRes.data.data ? sRes.data.data : (sRes.data && sRes.data.items ? sRes.data.items : sRes.data);
-                if (Array.isArray(sData)) {
-                    renderSjc('sjcBody', sData);
-                } else {
-                    renderErrorInto('sjcBody', 'Dữ liệu không hợp lệ', null, 7);
-                }
+            const sData = sjc && sjc.data ? sjc.data : (sjc && sjc.items ? sjc.items : sjc);
+            if (Array.isArray(sData)) {
+                renderSjc('sjcBody', sData);
             } else {
-                renderErrorInto('sjcBody', sRes.error || 'Invalid JSON', sRes.raw, 7);
+                renderErrorInto('sjcBody', 'Dữ liệu không hợp lệ', null, 7);
             }
 
             // DOJI
-            if (dRes.ok) {
-                const dData = dRes.data;
-                renderPricesInto('dojiBody', Array.isArray(dData) ? dData : (dData && dData.items ? dData.items : []));
-                if (Array.isArray(dData) && dData.length > 0 && dData[0].updateDate) setUpdateTime(new Date(dData[0].updateDate));
+            const dData = doji;
+            if (Array.isArray(dData)) {
+                renderPricesInto('dojiBody', dData);
+                if (dData.length > 0 && dData[0].updateDate) setUpdateTime(new Date(dData[0].updateDate));
             } else {
-                renderErrorInto('dojiBody', dRes.error || 'Invalid JSON', dRes.raw);
+                renderErrorInto('dojiBody', 'Dữ liệu không hợp lệ', null, 7);
             }
 
             updateStatsCombined();
