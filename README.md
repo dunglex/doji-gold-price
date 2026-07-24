@@ -1,10 +1,10 @@
-# DOJI Gold Price
+# Gold Price
 
-An automated tool that fetches and displays gold price data from DOJI.
+An automated tool that fetches and displays gold price data from DOJI & SJC.
 
 ## 🌐 Live Demo
 
-Check out the live demo here: [DOJI Gold Price Tracker](https://doji-gold.netlify.app/)
+Check out the live demo here: [Gold Price Tracker](https://xemgiavang.netlify.app/)
 
 ## 📝 License
 
