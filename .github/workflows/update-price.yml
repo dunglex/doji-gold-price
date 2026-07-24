@@ -28,7 +28,7 @@ jobs:
         run: bash download.sh
       
       - name: Decrypt prices
-        run: node decrypt.js > gold_prices.json
+        run: node decrypt.js
       
       - name: Check if files changed
         id: check-changes
