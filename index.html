@@ -619,6 +619,41 @@
             }).join('');
         }
 
+        function renderSjc(bodyElId, items) {
+            const tbody = document.getElementById(bodyElId);
+            if (!Array.isArray(items) || items.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="no-data">Không có dữ liệu</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = items.map(item => {
+                const code = item.Id || 'SJC';
+                const name = item.TypeName || '—';
+                const buy = item.Buy || '-';
+                const sell = item.Sell || '-';
+
+                let diff = null;
+                if (item.BuyValue != null && item.SellValue != null) {
+                    diff = (item.SellValue - item.BuyValue) / 1000;
+                }
+
+                const diffText = diff != null ? formatNumber(diff) : '-';
+                const diffPercent = diff != null && item.BuyValue ? ((diff / (item.BuyValue / 1000)) * 100).toFixed(2) + '%' : '-';
+
+                return `
+                    <tr>
+                        <td class="material-code">${escapeHtml(String(code))}</td>
+                        <td class="material-name">${escapeHtml(name)}</td>
+                        <td><span class="type-badge gold">Vàng</span></td>
+                        <td class="price-cell price-buy">${escapeHtml(String(buy))}</td>
+                        <td class="price-cell price-sell">${escapeHtml(String(sell))}</td>
+                        <td class="price-cell price-range">${diffText}<span style="color: #999;">(${diffPercent})</span></td>
+                        <td><span class="status-badge status-active"></span><span>Hoạt động</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
         function renderPricesInto(bodyElId, prices) {
             const tbody = document.getElementById(bodyElId);
             if (!Array.isArray(prices) || prices.length === 0) {
@@ -701,18 +736,14 @@
 
             // SJC
             if (sRes.ok) {
-                // sjc file may be an array similar to DOJI
-                const sData = sRes.data && sRes.data.items ? sRes.data.items : sRes.data;
+                const sData = sRes.data && sRes.data.data ? sRes.data.data : (sRes.data && sRes.data.items ? sRes.data.items : sRes.data);
                 if (Array.isArray(sData)) {
-                    renderPricesInto('sjcBody', sData);
-                    if (sData.length > 0 && sData[0].updateDate) setUpdateTime(new Date(sData[0].updateDate));
+                    renderSjc('sjcBody', sData);
                 } else {
-                    // Sometime SJC fetch returns HTML or other shape; try to detect common fields
-                    renderPricesInto('sjcBody', Array.isArray(sData) ? sData : []);
+                    renderErrorInto('sjcBody', 'Dữ liệu không hợp lệ', null, 7);
                 }
             } else {
-                // If content was HTML (Cloudflare block), we keep the message
-                renderErrorInto('sjcBody', sRes.error || 'Invalid JSON', sRes.raw);
+                renderErrorInto('sjcBody', sRes.error || 'Invalid JSON', sRes.raw, 7);
             }
 
             // DOJI
